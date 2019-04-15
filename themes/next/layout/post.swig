@@ -11,7 +11,7 @@
 {% block content %}
 
   <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+    {{ post_template.render(page,false,true) }}
 
     <div class="post-spread">
       {% if theme.jiathis %}
