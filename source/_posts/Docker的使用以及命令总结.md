@@ -1,6 +1,7 @@
 ---
 title: Docker的使用以及命令总结
-tags: Docker
+date: 2019/02/17 15:54:46
+tags: [Docker,命令总结]
 categories: Docker
 ---
 
@@ -9,6 +10,9 @@ categories: Docker
 - docker –help 可以查看docker的所有命令（注意单词全拼的参数前都是两个‘-’号）
 - docker info 查看docker信息
 - docker version 查看docker版本号
+
+
+<!--more-->
 
 ### 最有用的帮助命令
 docker XXX –help 查看具体命令的帮助手册（XXX代指各种命令）
