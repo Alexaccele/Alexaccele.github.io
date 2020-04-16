@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="操作系统,进程,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="code blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="操作系统——进程进程的定义与特征为了使参与并发执行的每个程序都能够独立地运行，在操作系统中配置了一个专门的数据结构，称为进程控制块（Process Control Block,PCB）。系统利用PCB来描述进程的基本情况和活动过程，进而控制和管理进程。通常称进程实体为进程。创建进程，实质上是创建进程实体中的PCB；撤销进程，实质上是撤销进程的PCB。 定义：  进程是程序的一次执行 进程是可以和别">
+<meta name="keywords" content="操作系统,进程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统——进程">
+<meta property="og:url" content="Alexaccele.github.io.git/2018/11/04/操作系统——进程/index.html">
+<meta property="og:site_name" content="code blog">
+<meta property="og:description" content="操作系统——进程进程的定义与特征为了使参与并发执行的每个程序都能够独立地运行，在操作系统中配置了一个专门的数据结构，称为进程控制块（Process Control Block,PCB）。系统利用PCB来描述进程的基本情况和活动过程，进而控制和管理进程。通常称进程实体为进程。创建进程，实质上是创建进程实体中的PCB；撤销进程，实质上是撤销进程的PCB。 定义：  进程是程序的一次执行 进程是可以和别">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.imgur.com/O3Du3my.png">
+<meta property="og:image" content="https://i.imgur.com/TXLm9Gz.png">
+<meta property="og:image" content="https://i.imgur.com/W96XROG.png">
+<meta property="og:image" content="https://i.imgur.com/kdAaJny.png">
+<meta property="og:updated_time" content="2020-04-16T08:29:12.842Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="操作系统——进程">
+<meta name="twitter:description" content="操作系统——进程进程的定义与特征为了使参与并发执行的每个程序都能够独立地运行，在操作系统中配置了一个专门的数据结构，称为进程控制块（Process Control Block,PCB）。系统利用PCB来描述进程的基本情况和活动过程，进而控制和管理进程。通常称进程实体为进程。创建进程，实质上是创建进程实体中的PCB；撤销进程，实质上是撤销进程的PCB。 定义：  进程是程序的一次执行 进程是可以和别">
+<meta name="twitter:image" content="https://i.imgur.com/O3Du3my.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="Alexaccele.github.io.git/2018/11/04/操作系统——进程/">
+
+
+
+
+
+  <title>操作系统——进程 | code blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3d8286dd05ef43c6f490c33137056337";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">code blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录学习中的点滴收获</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="Alexaccele.github.io.git/2018/11/04/操作系统——进程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="伈伈点灯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="code blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">操作系统——进程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-04T16:11:40+08:00">
+                2018-11-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/11/04/操作系统——进程/" class="leancloud_visitors" data-flag-title="操作系统——进程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="操作系统——进程"><a href="#操作系统——进程" class="headerlink" title="操作系统——进程"></a>操作系统——进程</h1><h2 id="进程的定义与特征"><a href="#进程的定义与特征" class="headerlink" title="进程的定义与特征"></a>进程的定义与特征</h2><p>为了使参与并发执行的每个程序都能够独立地运行，在操作系统中配置了一个专门的数据结构，称为进程控制块（Process Control Block,PCB）。系统利用PCB来描述进程的基本情况和活动过程，进而控制和管理进程。通常称进程实体为进程。<br>创建进程，实质上是创建进程实体中的PCB；<br>撤销进程，实质上是撤销进程的PCB。</p>
+<p>定义：</p>
+<ol>
+<li>进程是程序的一次执行</li>
+<li>进程是可以和别的计算并行执行</li>
+<li>进程是程序在一个数据集合上运行的过程，它是系统进行资源分配和调度的一个独立单位<a id="more"></a>
+特征：</li>
+</ol>
+<ul>
+<li>动态性：进程的实质是程序的一次执行过程，进程是动态产生，动态消亡的。</li>
+<li>并发性：任何进程都可以同其他进程一起并发执行。</li>
+<li>独立性：进程是一个能独立运行的基本单位，同时也是系统分配资源和调度的独立单位。</li>
+<li>异步性：由于进程间的相互制约，使进程具有执行的间断性，即进程按各自独立的、不可预知的速度向前推进。</li>
+</ul>
+<h2 id="进程的状态及转换"><a href="#进程的状态及转换" class="headerlink" title="进程的状态及转换"></a>进程的状态及转换</h2><p>进程的几种状态：</p>
+<ol>
+<li>新建状态(New)：新创建了一个线程对象。</li>
+<li>就绪状态(Runnable)：线程对象创建后，其他线程调用了该对象的start()方法。该状态<br>的线程位于“可运行线程池”中，变得可运行，只等待获取CPU的使用权。即在就绪状态的<br>进程除CPU之外，其它的运行所需资源都已全部获得。</li>
+<li>运行状态(Running)：就绪状态的线程获取了CPU，执行程序代码。</li>
+<li>阻塞状态(Blocked)：阻塞状态是线程因为某种原因放弃CPU使用权，暂时停止运行。</li>
+<li>死亡状态(Dead)：线程执行完了或者因异常退出了run()方法，该线程结束生命周期。</li>
+</ol>
+<p>直到线程进入就绪状态，才有机会转到运行状态。</p>
+<p>阻塞的情况分三种：</p>
+<ol start="2">
+<li>等待阻塞：运行的线程执行wait()方法，该线程会释放占用的所有资源，JVM会把该线<br>程放入“等待池”中。进入这个状态后，是不能自动唤醒的，必须依靠其他线程调用<br>notify()或notifyAll()方法才能被唤醒，</li>
+<li>同步阻塞：运行的线程在获取对象的同步锁时，若该同步锁被别的线程占用，则JVM<br>会把该线程放入“锁池”中。</li>
+<li>其他阻塞：运行的线程执行sleep()或join()方法，或者发出了I/O请求时，JVM会把该<br>线程置为阻塞状态。当sleep()状态超时、join()等待线程终止或者超时、或者I/O处理完毕<br>时，线程重新转入就绪状态。</li>
+</ol>
+<p>线程变化的状态转换图如下：</p>
+<p><img src="https://i.imgur.com/O3Du3my.png" alt></p>
+<h2 id="进程控制块PCB"><a href="#进程控制块PCB" class="headerlink" title="进程控制块PCB"></a>进程控制块PCB</h2><p>PCB作为进程实体的一部分，记录了操作系统所需的，用于描述进程的当前情况以及管理进程运行的全部信息，是操作系统中最重要的记录型数据结构。</p>
+<p>PCB的作用是使一个在多道程序环境下不能独立运行的程序（含数据）成为一个能独立运行的基本单位，一个能与其他进程并发执行的进程。</p>
+<ol>
+<li>作为独立运行基本单位的标志。</li>
+<li>能实现间断性运行方式。</li>
+<li>提供进程管理所需的信息。</li>
+<li>提供进程调度所需要的信息。</li>
+<li>实现与其他进程的同步与通信。</li>
+</ol>
+<h3 id="进程控制块中的信息"><a href="#进程控制块中的信息" class="headerlink" title="进程控制块中的信息"></a>进程控制块中的信息</h3><ol>
+<li>进程标识符：用于唯一地标识一个进程。</li>
+<li>处理机状态：也称为处理机的上下文，主要是由处理机的各种寄存器中的内容组成的。包括通用寄存器、指令寄存器、程序状态字PSW、用户栈指针。</li>
+<li>进程调度信息：（1）进程状态，指明进程的当前状态；（2）进程优先级，用于描述进程使用处理机的优先级别的一个整数；（3）进程调度所需的其他信息，比如进程已等待CPU的时间总和、进程已执行的时间总和等；（4）事件，是指进程由执行状态转变为阻塞状态所等待发生的事件，即阻塞原因。</li>
+<li>进程控制信息：用于进程控制所必须的信息，（1）程序和数据的地址；（2）进程同步和通信机制；（3）资源清单，在该清单中列出了进程在运行期间所需的全部资源（除CPU外的），还有一张已分配到该进程的资源清单；（4）链接指针，本进程所在队列的下一个进程的PCB的首地址。</li>
+</ol>
+<h3 id="进程控制块的组织方式"><a href="#进程控制块的组织方式" class="headerlink" title="进程控制块的组织方式"></a>进程控制块的组织方式</h3><p>线性方式：将系统中所有的PCB都组织在一张线性表中，将该表的首地址存放在内存的一个专用区域中。</p>
+<p> <img src="https://i.imgur.com/TXLm9Gz.png" alt></p>
+<p>链接方式：把具有相同状态进程的PCB分别通过PCB中的链接字链接成一个队列</p>
+<p> <img src="https://i.imgur.com/W96XROG.png" alt></p>
+<p>索引方式：系统根据所有进程状态的不同，建立几张索引表。</p>
+<p> <img src="https://i.imgur.com/kdAaJny.png" alt></p>
+<h2 id="进程的创建"><a href="#进程的创建" class="headerlink" title="进程的创建"></a>进程的创建</h2><h3 id="引起创建进程的事件"><a href="#引起创建进程的事件" class="headerlink" title="引起创建进程的事件"></a>引起创建进程的事件</h3><p>导致一个进程去创建另一个进程的典型事件有四类：</p>
+<ol>
+<li>用户登录：在分时系统中，用户在终端键入登录命令后，若成功登录，系统将为该用户建立一个进程，并把它插入到就绪队列中。</li>
+<li>作业调度：在多道批处理系统中，当作业调度程序按一定的算法调度到某些作业时，便将其装入内存，创建进程，并插入到就绪队列中。</li>
+<li>提供服务：当运行中的用户程序提出某种请求后，系统将专门创建一个进程来提供用户所需要的服务。</li>
+<li>应用请求：由用户进程自己创建新进程，以便使新进程以同创建者进程并发运行的方式完成特定任务。</li>
+</ol>
+<h3 id="进程的创建-1"><a href="#进程的创建-1" class="headerlink" title="进程的创建"></a>进程的创建</h3><ol>
+<li><p>申请空白PCB,为新进程申请获得唯一的数字标识符,并从PCB集合中索取一个空白PCB.</p>
+</li>
+<li><p>为新进程分配其运行所需的资源。包括各种物理和逻辑资源,如内存、文件、I/O设备和CPU时间等。这些资源或从操作系统或仅从其父进程获得。新进程对这些资源的需求详情一般也要提前告知操作系统或其父进程。 例如, 为新进程的程序和数据以及用户栈分配必要的内存空间时,操作系统必须知道新进程所需内存的大小: 1 对于批处理作业,其大小可在用户提出创建进程要求时提供;2 若是为应用进程创建子进程,也应是在该进程提出创建进程的请求中给出所需内存的大小;3 对于交互型作业,用户可以不给出内存要求而由系统分配一定的空间;如果新进程要共享某个已在内存的地址空间(即已装入内存的共享段),则必须建立相应的链接。</p>
+</li>
+<li><p>初始化进程控制块(PCB)。PCB的初始化包括: 1 初始化标识信息,将系统分配的标识符和父进程标识符填入新 PCB中;2 初始化处理机状态信息,使程序计数器指向程序的入口地址,使栈指针指向栈顶; 3 初始化处理机控制信息,将进程的状态设置为就绪状态或静止就绪状态,对于优先级,通常是将它设置为最低优先级,除非用户以显式方式提出高优先级要求。</p>
+</li>
+<li><p>如果进程就绪队列能够接纳新进程,便将新进程插入就绪队列。</p>
+</li>
+</ol>
+<h2 id="进程的终止"><a href="#进程的终止" class="headerlink" title="进程的终止"></a>进程的终止</h2><h3 id="引起进程终止的3种事件"><a href="#引起进程终止的3种事件" class="headerlink" title="引起进程终止的3种事件"></a>引起进程终止的3种事件</h3><ul>
+<li><p>正常结束：表示进程的任务已经完成</p>
+</li>
+<li><p>异常结束：是指进程在运行时发生了某种异常事件, 使程序无法继续运行。常见的异常事件有: </p>
+<blockquote>
+<p>1.越界错,这是指程序所访问的存储区,已越出该进程的区域;</p>
+<p>2.保护错,指进程试图去访问一个不允许访问的资源或文件, 或者以不适当的方式进行访问,例如,进程试图去写一个只读文件;</p>
+<p>3.非法指令,指程序试图去执行一条不存在的指令。出现该错误的原因可能是程序错误地转移到数据区,把数据当成了指令;</p>
+<p>4.特权指令错,指用户进程试图去执行一条只允许OS执行的指令;</p>
+<p>5.运行超时,指进程的执行时间超过了指定的最大值; </p>
+<p>6.等待超时,指进程等待某事件的时间超过了规定的最大值;</p>
+<p>7.算术运算错,指进程试图去执行一个被禁止的运算,例如,被0除;</p>
+<p>8.I/0故障,这是指在I/O过程中发生了错误等。</p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li>外界干预：是指进程应外界的请求而终止运行。这些干预有: <blockquote>
+<p>1.操作员或操作系统干预,指如果系统中发生了某事件,例如,发生了系统死锁, 由操作员或操作系统采取终止某些进程的方式使系统从死锁状态中解救出来;</p>
+<p>2.父进程请求,指当子进程已完成父进程所要求的任务时,父进程可以提出请求结束该子进程;</p>
+<p>3.因父进程终止,指当父进程终止时,它的所有子进程也都应当结束,因此,OS在终止父进程的同时,也将它的所有子孙进程终止。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="进程的终止过程"><a href="#进程的终止过程" class="headerlink" title="进程的终止过程"></a>进程的终止过程</h3><ol>
+<li><p>根据被终止进程的标识符,从PCB集合中检索出该进程的PCB,从中读出该进程的状态;</p>
+</li>
+<li><p>若被终止进程正处于执行状态,应立即终止该进程的执行,并置调度标志为真,用于指示该进程被终止后应重新进行调度;</p>
+</li>
+<li><p>若该进程还有子孙进程,还应将其所有子孙进程也都予以终止, 以防它们成为不可控的进程;</p>
+</li>
+<li><p>将被终止进程所拥有的全部资源或者归还给其父进程,或者归还给系统;</p>
+</li>
+<li><p>将被终止进程(PCB)从所在队列(或链表)中移出,等待其它程序来搜集信息。</p>
+</li>
+</ol>
+<h2 id="进程间的通信方式"><a href="#进程间的通信方式" class="headerlink" title="进程间的通信方式"></a>进程间的通信方式</h2><ul>
+<li><p>管道( pipe )：管道是一种半双工的通信方式，数据只能单向流动，而且只能在具有亲缘关<br>系的进程间使用。进程的亲缘关系通常是指父子进程关系。</p>
+</li>
+<li><p>有名管道 (named pipe) ： 有名管道也是半双工的通信方式，但是它允许无亲缘关系进程<br>间的通信。</p>
+</li>
+<li><p>信号量( semophore ) ： 信号量是一个计数器，可以用来控制多个进程对共享资源的访<br>问。它常作为一种锁机制，防止某进程正在访问共享资源时，其他进程也访问该资源。因此，<br>主要作为进程间以及同一进程内不同线程之间的同步手段。</p>
+</li>
+<li><p>消息队列( message queue ) ： 消息队列是由消息的链表，存放在内核中并由消息队列标<br>识符标识。消息队列克服了信号传递信息少、管道只能承载无格式字节流以及缓冲区大小受限<br>等缺点。</p>
+</li>
+<li><p>信号 ( sinal ) ： 信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</p>
+</li>
+<li><p>共享内存( shared memory ) ：共享内存就是映射一段能被其他进程所访问的内存，这段共<br>享内存由一个进程创建，但多个进程都可以访问。共享内存是最快的 IPC 方式，它是针对其<br>他进程间通信方式运行效率低而专门设计的。它往往与其他通信机制，如信号两，配合使用，<br>来实现进程间的同步和通信。</p>
+</li>
+<li><p>套接字( socket ) ： 套解口也是一种进程间通信机制，与其他通信机制不同的是，它可用于<br>不同及其间的进程通信。</p>
+</li>
+</ul>
+<h2 id="进程与线程对比"><a href="#进程与线程对比" class="headerlink" title="进程与线程对比"></a>进程与线程对比</h2><ul>
+<li><p>进程是资源分配的最小单位，线程是程序执行的最小单位。</p>
+</li>
+<li><p>进程是系统进行资源分配和调度的一个独立单位.</p>
+</li>
+<li><p>线程是进程的一个实体,是CPU调度和分派的基本单位</p>
+</li>
+<li><p>进程有自己的独立地址空间，每启动一个进程，系统就会为它分配地址空间，建立数据表来维护代码段、堆栈段和数据段，这种操作非常昂贵。而线程是共享进程中的数据的，使用相同的地址空间，因此CPU切换一个线程的花费远比进程要小很多，同时创建一个线程的开销也比进程要小很多。</p>
+</li>
+<li><p>线程之间的通信更方便，同一进程下的线程共享全局变量、静态变量等数据，而进程之间的通信需要以通信的方式（IPC)进行。不过如何处理好同步与互斥是编写多线程程序的难点。</p>
+</li>
+<li><p>但是多进程程序更健壮，多线程程序只要有一个线程死掉，整个进程也死掉了，而一个进程死掉并不会对另外一个进程造成影响，因为进程有自己独立的地址空间。</p>
+</li>
+</ul>
+<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p>线程和进程在使用上各有优缺点：线程执行开销小，但不利于资源的管理和保护；而进程正相反。<br>同时，线程适合于在SMP机器上运行，而进程则可以跨机器迁移。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:18px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	  
+	</div>
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/操作系统/" rel="tag"><i class="fa fa-tag"></i> 操作系统</a>
+          
+            <a href="/tags/进程/" rel="tag"><i class="fa fa-tag"></i> 进程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/04/Java内存区域/" rel="next" title="Java内存区域">
+                <i class="fa fa-chevron-left"></i> Java内存区域
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/06/操作系统——死锁/" rel="prev" title="操作系统——死锁">
+                操作系统——死锁 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MDM5NS8xNjkyMg=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="伈伈点灯">
+            
+              <p class="site-author-name" itemprop="name">伈伈点灯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Alexaccele" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="zouruiximail@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/qq_40995335" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-contao"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统——进程"><span class="nav-number">1.</span> <span class="nav-text">操作系统——进程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的定义与特征"><span class="nav-number">1.1.</span> <span class="nav-text">进程的定义与特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的状态及转换"><span class="nav-number">1.2.</span> <span class="nav-text">进程的状态及转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程控制块PCB"><span class="nav-number">1.3.</span> <span class="nav-text">进程控制块PCB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#进程控制块中的信息"><span class="nav-number">1.3.1.</span> <span class="nav-text">进程控制块中的信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程控制块的组织方式"><span class="nav-number">1.3.2.</span> <span class="nav-text">进程控制块的组织方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的创建"><span class="nav-number">1.4.</span> <span class="nav-text">进程的创建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引起创建进程的事件"><span class="nav-number">1.4.1.</span> <span class="nav-text">引起创建进程的事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程的创建-1"><span class="nav-number">1.4.2.</span> <span class="nav-text">进程的创建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的终止"><span class="nav-number">1.5.</span> <span class="nav-text">进程的终止</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引起进程终止的3种事件"><span class="nav-number">1.5.1.</span> <span class="nav-text">引起进程终止的3种事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程的终止过程"><span class="nav-number">1.5.2.</span> <span class="nav-text">进程的终止过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程间的通信方式"><span class="nav-number">1.6.</span> <span class="nav-text">进程间的通信方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程与线程对比"><span class="nav-number">1.7.</span> <span class="nav-text">进程与线程对比</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优缺点"><span class="nav-number">1.7.1.</span> <span class="nav-text">优缺点</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">伈伈点灯</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count"></span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共字</span>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1rsz2DVhaq57npfl5d5Km1M1-gzGzoHsz", "bGO10LFJSwJacOmLolOuNje3");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>

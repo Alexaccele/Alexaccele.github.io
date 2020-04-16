@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="微服务,Eureka,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="code blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="在任何分布式架构中，都需要找到机器所在的物理地址，这个过程称为服务发现。 服务发现的优点：  可以快速对环境中运行的服务实例数量进行水平伸缩 将服务的物理位置抽象，由于服务消费者不知道实际服务实例的物理位置，因此可以从可用服务池中添加或移除服务实例 有助于提高应用的弹性。当服务实例不可用时，可从内部可用服务列表移除该实例。  服务发现架构 微服务通过服务发现代理进行注册 通过服务发现代理来查找各个">
+<meta name="keywords" content="微服务,Eureka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="服务发现——基于Eureka服务器实现微服务注册">
+<meta property="og:url" content="Alexaccele.github.io.git/2019/06/27/服务发现——基于Eureka服务器实现微服务注册/index.html">
+<meta property="og:site_name" content="code blog">
+<meta property="og:description" content="在任何分布式架构中，都需要找到机器所在的物理地址，这个过程称为服务发现。 服务发现的优点：  可以快速对环境中运行的服务实例数量进行水平伸缩 将服务的物理位置抽象，由于服务消费者不知道实际服务实例的物理位置，因此可以从可用服务池中添加或移除服务实例 有助于提高应用的弹性。当服务实例不可用时，可从内部可用服务列表移除该实例。  服务发现架构 微服务通过服务发现代理进行注册 通过服务发现代理来查找各个">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/201906271625456.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTk1MzM1,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2019062716370935.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTk1MzM1,size_16,color_FFFFFF,t_70">
+<meta property="og:updated_time" content="2020-04-16T08:44:04.572Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="服务发现——基于Eureka服务器实现微服务注册">
+<meta name="twitter:description" content="在任何分布式架构中，都需要找到机器所在的物理地址，这个过程称为服务发现。 服务发现的优点：  可以快速对环境中运行的服务实例数量进行水平伸缩 将服务的物理位置抽象，由于服务消费者不知道实际服务实例的物理位置，因此可以从可用服务池中添加或移除服务实例 有助于提高应用的弹性。当服务实例不可用时，可从内部可用服务列表移除该实例。  服务发现架构 微服务通过服务发现代理进行注册 通过服务发现代理来查找各个">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/201906271625456.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTk1MzM1,size_16,color_FFFFFF,t_70">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="Alexaccele.github.io.git/2019/06/27/服务发现——基于Eureka服务器实现微服务注册/">
+
+
+
+
+
+  <title>服务发现——基于Eureka服务器实现微服务注册 | code blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3d8286dd05ef43c6f490c33137056337";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">code blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录学习中的点滴收获</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="Alexaccele.github.io.git/2019/06/27/服务发现——基于Eureka服务器实现微服务注册/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="伈伈点灯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="code blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">服务发现——基于Eureka服务器实现微服务注册</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-27T16:41:46+08:00">
+                2019-06-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/微服务/" itemprop="url" rel="index">
+                    <span itemprop="name">微服务</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/06/27/服务发现——基于Eureka服务器实现微服务注册/" class="leancloud_visitors" data-flag-title="服务发现——基于Eureka服务器实现微服务注册">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在任何分布式架构中，都需要找到机器所在的物理地址，这个过程称为服务发现。</p>
+<p>服务发现的优点：</p>
+<ul>
+<li>可以快速对环境中运行的服务实例数量进行水平伸缩</li>
+<li>将服务的物理位置抽象，由于服务消费者不知道实际服务实例的物理位置，因此可以从可用服务池中添加或移除服务实例</li>
+<li>有助于提高应用的弹性。当服务实例不可用时，可从内部可用服务列表移除该实例。</li>
+</ul>
+<h3 id="服务发现架构"><a href="#服务发现架构" class="headerlink" title="服务发现架构"></a>服务发现架构</h3><ol>
+<li>微服务通过服务发现代理进行注册</li>
+<li>通过服务发现代理来查找各个微服务实例的物理位置，通常服务消费者也会在本地缓存它请求的服务实例的物理地址</li>
+<li>服务发现节点共享微服务实例的健康信息</li>
+<li>微服务向服务发现代理发送心跳包，如果微服务不可用，则服务发现节点将移除对应实例IP</li>
+</ol>
+<p>本文使用Spring Cloud和Netflix的Eureka服务发现引擎来实现服务发现模式。<br>客户端负载均衡，使用Spring Cloud和Netflix的Ribbon库</p>
+<p>本文源码可在此找到：<a href="https://github.com/Alexaccele/SpringCloudDemo" target="_blank" rel="noopener">https://github.com/Alexaccele/SpringCloudDemo</a></p>
+<h3 id="本文测试模块介绍"><a href="#本文测试模块介绍" class="headerlink" title="本文测试模块介绍"></a>本文测试模块介绍</h3><p><img src="https://img-blog.csdnimg.cn/201906271625456.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTk1MzM1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="构建Eureka服务——服务代理"><a href="#构建Eureka服务——服务代理" class="headerlink" title="构建Eureka服务——服务代理"></a>构建Eureka服务——服务代理</h3><h4 id="添加maven依赖"><a href="#添加maven依赖" class="headerlink" title="添加maven依赖"></a>添加maven依赖</h4><p>除了引入spring cloud以外，主要引入如下依赖，以支持Eureka库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">          &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">          &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;</span><br><span class="line">   &lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<h4 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 8761  #Eureka服务端口</span><br><span class="line"></span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    registerWithEureka: false #Eureka服务 本身不进行服务注册</span><br><span class="line">    fetch-registry: false #Eureka服务 本身不进行本地缓存注册表信息</span><br><span class="line">#  server:</span><br><span class="line">#    waitTimeInMsWhenSyncEmpty: 5 #等待其他待注册服务5min，让所有服务有机会在通告它们之前通过Eureka进行注册</span><br></pre></td></tr></table></figure>
+<p>上面的最后一项属性在这里之所以注释掉，是为了能够快速的启动Eureka服务。</p>
+<h4 id="Eureka服务启动类"><a href="#Eureka服务启动类" class="headerlink" title="Eureka服务启动类"></a>Eureka服务启动类</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import org.springframework.boot.SpringApplication;</span><br><span class="line">import org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line">import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;</span><br><span class="line"></span><br><span class="line">@SpringBootApplication</span><br><span class="line">@EnableEurekaServer//启动Eureka服务</span><br><span class="line">public class EurekaServerApplication &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(EurekaServerApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里重要的只是@EnableEurekaServer注解，用于在spring服务中启动Eureka服务器。</p>
+<h3 id="将服务注册到Eureka服务器"><a href="#将服务注册到Eureka服务器" class="headerlink" title="将服务注册到Eureka服务器"></a>将服务注册到Eureka服务器</h3><h4 id="添加maven依赖-1"><a href="#添加maven依赖-1" class="headerlink" title="添加maven依赖"></a>添加maven依赖</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">          &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">          &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;</span><br><span class="line">      &lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>引入Eureka库，以便可以用Eureka进行服务注册</p>
+<h4 id="配置文件-1"><a href="#配置文件-1" class="headerlink" title="配置文件"></a>配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  application:</span><br><span class="line">    name: getinfo-service</span><br><span class="line">  profiles:</span><br><span class="line">    active: default</span><br><span class="line">eureka:</span><br><span class="line">  instance:</span><br><span class="line">    prefer-ip-address: true  #注册服务的IP，而不是服务器名称</span><br><span class="line">  client:</span><br><span class="line">    register-with-eureka: true</span><br><span class="line">    fetch-registry: true</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http://localhost:8761/eureka #Eureka服务位置</span><br><span class="line">server:</span><br><span class="line">  port: 8090</span><br></pre></td></tr></table></figure>
+<p>其中的spring.application.name属性应该写在bootstrap.yml配置文件中，用于确定该服务的应用程序ID，而其余配置则应该写入我们通常所使用的application.yml文件中。</p>
+<p>注意当多个服务要部署在本地时，应该注意区别每个服务的端口号应该不能冲突。</p>
+<p>此时运行两个应用程序，可以在 <a href="http://localhost:8761/eureka/apps" target="_blank" rel="noopener">http://localhost:8761/eureka/apps</a> 中查看相关注册服务的信息。</p>
+<h3 id="使用服务发现来查找服务"><a href="#使用服务发现来查找服务" class="headerlink" title="使用服务发现来查找服务"></a>使用服务发现来查找服务</h3><h4 id="使用Spring-DiscoveryClient查找服务实例"><a href="#使用Spring-DiscoveryClient查找服务实例" class="headerlink" title="使用Spring DiscoveryClient查找服务实例"></a>使用Spring DiscoveryClient查找服务实例</h4><p>首先在该应用程序的引导类中加入<code>@EnableDiscoveryClient</code>注解，使应用程序能够使用DiscoveryClient和Ribbon库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class InfoDiscoveryClient &#123;</span><br><span class="line">    @Autowired</span><br><span class="line">    private DiscoveryClient discoveryClient;</span><br><span class="line"></span><br><span class="line">    public String getInfo(String name)&#123;</span><br><span class="line">        RestTemplate restTemplate = new RestTemplate();</span><br><span class="line">        //获取对应服务的所有实例列表</span><br><span class="line">        List&lt;ServiceInstance&gt; instances = discoveryClient.getInstances(&quot;getinfo-service&quot;);</span><br><span class="line">        if(instances.size() == 0)return null;</span><br><span class="line">        String serviceUri = String.format(&quot;%s/getInfo/%s&quot;,</span><br><span class="line">                instances.get(0).getUri().toString(),</span><br><span class="line">                name);//得到服务实例位置</span><br><span class="line">        //使用标准的Spring REST模板类调用该服务实例</span><br><span class="line">        ResponseEntity&lt;String&gt; exchange = restTemplate.exchange(serviceUri, HttpMethod.GET, null, String.class, name);</span><br><span class="line">        return exchange.getBody();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="使用带有Ribbon功能的Spring-RestTemplate调用服务"><a href="#使用带有Ribbon功能的Spring-RestTemplate调用服务" class="headerlink" title="使用带有Ribbon功能的Spring RestTemplate调用服务"></a>使用带有Ribbon功能的Spring RestTemplate调用服务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class InfoRibbonClient &#123;</span><br><span class="line">    @LoadBalanced</span><br><span class="line">    @Bean</span><br><span class="line">    private RestTemplate getRestTemplate()&#123;</span><br><span class="line">        return new RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line">    public String getInfo(String name)&#123;</span><br><span class="line">        ResponseEntity&lt;String&gt; exchange = restTemplate.exchange(&quot;http://getifo-service/getInfo/&#123;name&#125;&quot;,</span><br><span class="line">                HttpMethod.GET,</span><br><span class="line">                null, String.class, name);</span><br><span class="line">        return exchange.getBody();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果要将Ribbon和RestTemplate一起使用，必须使用<code>@LoadBalanced</code>注解进行显示标注</p>
+<h4 id="调用服务发现"><a href="#调用服务发现" class="headerlink" title="调用服务发现"></a>调用服务发现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">@RestController</span><br><span class="line">public class getInfoController &#123;</span><br><span class="line">    @Autowired</span><br><span class="line">    InfoDiscoveryClient discoveryClient;</span><br><span class="line">    @Autowired</span><br><span class="line">    InfoRibbonClient ribbonClient;</span><br><span class="line">    @GetMapping(&quot;/getInfo/&#123;name&#125;/&#123;type&#125;&quot;)</span><br><span class="line">    private String getInfoByDiscovery(@PathVariable String name, @PathVariable(name = &quot;type&quot;) String discoveryType)&#123;</span><br><span class="line">        String info = null;</span><br><span class="line">        switch (discoveryType)&#123;</span><br><span class="line">            case &quot;discovery&quot;:</span><br><span class="line">                System.out.println(&quot;use discovery client&quot;);</span><br><span class="line">                info = discoveryClient.getInfo(name);</span><br><span class="line">                break;</span><br><span class="line">            case &quot;ribbon&quot;:</span><br><span class="line">                System.out.println(&quot;use ribbon client&quot;);</span><br><span class="line">                info = ribbonClient.getInfo(name);</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                info = discoveryClient.getInfo(name);</span><br><span class="line">        &#125;</span><br><span class="line">        return info;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="服务提供者"><a href="#服务提供者" class="headerlink" title="服务提供者"></a>服务提供者</h3><p>一个简单的服务提供者，实现获取相应信息的服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@RestController</span><br><span class="line">public class GetinfoServiceApplication &#123;</span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;/getInfo/&#123;name&#125;&quot;)</span><br><span class="line">    public String getInfo(@PathVariable String name)&#123;</span><br><span class="line">        return &quot;It&apos;s &quot; + name + &quot;&apos;s info: ......&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(GetinfoServiceApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>启动服务发现代理之后，再启动服务提供者和服务消费者，并在postman中进行测试，结果如下：<br><img src="https://img-blog.csdnimg.cn/2019062716370935.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTk1MzM1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>服务消费者成功的调用了注册在服务代理中的服务。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:18px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	  
+	</div>
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/微服务/" rel="tag"><i class="fa fa-tag"></i> 微服务</a>
+          
+            <a href="/tags/Eureka/" rel="tag"><i class="fa fa-tag"></i> Eureka</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/20/集合类实现原理总结/" rel="next" title="集合类实现原理总结">
+                <i class="fa fa-chevron-left"></i> 集合类实现原理总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/17/HashMap (JDK1.8)的扩容时机与阈值的探讨/" rel="prev" title="HashMap（JDK1.8）的扩容时机与阈值的探讨">
+                HashMap（JDK1.8）的扩容时机与阈值的探讨 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MDM5NS8xNjkyMg=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="伈伈点灯">
+            
+              <p class="site-author-name" itemprop="name">伈伈点灯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Alexaccele" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="zouruiximail@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/qq_40995335" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-contao"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务发现架构"><span class="nav-number">1.</span> <span class="nav-text">服务发现架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本文测试模块介绍"><span class="nav-number">2.</span> <span class="nav-text">本文测试模块介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建Eureka服务——服务代理"><span class="nav-number">3.</span> <span class="nav-text">构建Eureka服务——服务代理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#添加maven依赖"><span class="nav-number">3.1.</span> <span class="nav-text">添加maven依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置文件"><span class="nav-number">3.2.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Eureka服务启动类"><span class="nav-number">3.3.</span> <span class="nav-text">Eureka服务启动类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#将服务注册到Eureka服务器"><span class="nav-number">4.</span> <span class="nav-text">将服务注册到Eureka服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#添加maven依赖-1"><span class="nav-number">4.1.</span> <span class="nav-text">添加maven依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置文件-1"><span class="nav-number">4.2.</span> <span class="nav-text">配置文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用服务发现来查找服务"><span class="nav-number">5.</span> <span class="nav-text">使用服务发现来查找服务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用Spring-DiscoveryClient查找服务实例"><span class="nav-number">5.1.</span> <span class="nav-text">使用Spring DiscoveryClient查找服务实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用带有Ribbon功能的Spring-RestTemplate调用服务"><span class="nav-number">5.2.</span> <span class="nav-text">使用带有Ribbon功能的Spring RestTemplate调用服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#调用服务发现"><span class="nav-number">5.3.</span> <span class="nav-text">调用服务发现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务提供者"><span class="nav-number">6.</span> <span class="nav-text">服务提供者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-number">7.</span> <span class="nav-text">测试</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">伈伈点灯</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count"></span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共字</span>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1rsz2DVhaq57npfl5d5Km1M1-gzGzoHsz", "bGO10LFJSwJacOmLolOuNje3");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>

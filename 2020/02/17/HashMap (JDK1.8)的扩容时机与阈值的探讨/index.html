@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="集合,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="code blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="最近又开始复习一些基础知识，发现网上很多关于HashMap的总结有一些问题，尤其是扩容的时机和阈值的确定仍然有一些疑问，因此果断还是自己看看源码。 本文只指出部分关于扩容的问题，其他详细分析可以参考其他文章。 究竟什么时候扩容 当put时发现table未初始化时，进行初始化扩容 当put加入节点后，发现size（键值对数量）&amp;gt;threshold时，进行扩容  在下列源码中分别对应注释 123">
+<meta name="keywords" content="集合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HashMap（JDK1.8）的扩容时机与阈值的探讨">
+<meta property="og:url" content="Alexaccele.github.io.git/2020/02/17/HashMap (JDK1.8)的扩容时机与阈值的探讨/index.html">
+<meta property="og:site_name" content="code blog">
+<meta property="og:description" content="最近又开始复习一些基础知识，发现网上很多关于HashMap的总结有一些问题，尤其是扩容的时机和阈值的确定仍然有一些疑问，因此果断还是自己看看源码。 本文只指出部分关于扩容的问题，其他详细分析可以参考其他文章。 究竟什么时候扩容 当put时发现table未初始化时，进行初始化扩容 当put加入节点后，发现size（键值对数量）&amp;gt;threshold时，进行扩容  在下列源码中分别对应注释 123">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200217152914993.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200217153215517.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTk1MzM1,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200217154502207.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTk1MzM1,size_16,color_FFFFFF,t_70">
+<meta property="og:updated_time" content="2020-04-16T08:41:48.022Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HashMap（JDK1.8）的扩容时机与阈值的探讨">
+<meta name="twitter:description" content="最近又开始复习一些基础知识，发现网上很多关于HashMap的总结有一些问题，尤其是扩容的时机和阈值的确定仍然有一些疑问，因此果断还是自己看看源码。 本文只指出部分关于扩容的问题，其他详细分析可以参考其他文章。 究竟什么时候扩容 当put时发现table未初始化时，进行初始化扩容 当put加入节点后，发现size（键值对数量）&amp;gt;threshold时，进行扩容  在下列源码中分别对应注释 123">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200217152914993.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="Alexaccele.github.io.git/2020/02/17/HashMap (JDK1.8)的扩容时机与阈值的探讨/">
+
+
+
+
+
+  <title>HashMap（JDK1.8）的扩容时机与阈值的探讨 | code blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3d8286dd05ef43c6f490c33137056337";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">code blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录学习中的点滴收获</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="Alexaccele.github.io.git/2020/02/17/HashMap (JDK1.8)的扩容时机与阈值的探讨/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="伈伈点灯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="code blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HashMap（JDK1.8）的扩容时机与阈值的探讨</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-17T15:51:49+08:00">
+                2020-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/集合/" itemprop="url" rel="index">
+                    <span itemprop="name">集合</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2020/02/17/HashMap (JDK1.8)的扩容时机与阈值的探讨/" class="leancloud_visitors" data-flag-title="HashMap（JDK1.8）的扩容时机与阈值的探讨">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近又开始复习一些基础知识，发现网上很多关于HashMap的总结有一些问题，尤其是扩容的时机和阈值的确定仍然有一些疑问，因此果断还是自己看看源码。</p>
+<p>本文只指出部分关于扩容的问题，其他详细分析可以参考其他文章。</p>
+<h2 id="究竟什么时候扩容"><a href="#究竟什么时候扩容" class="headerlink" title="究竟什么时候扩容"></a>究竟什么时候扩容</h2><ul>
+<li>当put时发现table未初始化时，进行初始化扩容</li>
+<li>当put加入节点后，发现size（键值对数量）&gt;threshold时，进行扩容</li>
+</ul>
+<p>在下列源码中分别对应注释</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,</span><br><span class="line">               boolean evict) &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;</span><br><span class="line">    if ((tab = table) == null || (n = tab.length) == 0)</span><br><span class="line">        n = (tab = resize()).length;    //初始化扩容</span><br><span class="line">    if ((p = tab[i = (n - 1) &amp; hash]) == null)</span><br><span class="line">        tab[i] = newNode(hash, key, value, null);</span><br><span class="line">    else &#123;</span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">        if (p.hash == hash &amp;&amp;</span><br><span class="line">            ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))</span><br><span class="line">            e = p;</span><br><span class="line">        else if (p instanceof TreeNode)</span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);</span><br><span class="line">        else &#123;</span><br><span class="line">            for (int binCount = 0; ; ++binCount) &#123;</span><br><span class="line">                if ((e = p.next) == null) &#123;</span><br><span class="line">                    p.next = newNode(hash, key, value, null);</span><br><span class="line">                    if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st</span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">                if (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))</span><br><span class="line">                    break;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (e != null) &#123; // existing mapping for key</span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            if (!onlyIfAbsent || oldValue == null)</span><br><span class="line">                e.value = value;</span><br><span class="line">            afterNodeAccess(e);</span><br><span class="line">            return oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ++modCount;</span><br><span class="line">    if (++size &gt; threshold)</span><br><span class="line">        resize();    //超过阈值扩容</span><br><span class="line">    afterNodeInsertion(evict);</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="阈值是如何确定的"><a href="#阈值是如何确定的" class="headerlink" title="阈值是如何确定的"></a>阈值是如何确定的</h2><p>其实最关键的就是阈值的确定，网上大部分文章只说了阈值是 <code>load factor*current capacity</code>，这个结论是正确的，但整个过程是根据使用的构造函数而有所不同的。<br>接下来我们只分析阈值和容量的关系。<br>下面是resize的部分代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">final Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">    int oldCap = (oldTab == null) ? 0 : oldTab.length;</span><br><span class="line">    int oldThr = threshold;</span><br><span class="line">    int newCap, newThr = 0;</span><br><span class="line">    if (oldCap &gt; 0) &#123;</span><br><span class="line">        if (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">            threshold = Integer.MAX_VALUE;</span><br><span class="line">            return oldTab;</span><br><span class="line">        &#125;</span><br><span class="line">        else if ((newCap = oldCap &lt;&lt; 1) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                 oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">            newThr = oldThr &lt;&lt; 1; // double threshold</span><br><span class="line">    &#125;</span><br><span class="line">    else if (oldThr &gt; 0) // initial capacity was placed in threshold</span><br><span class="line">        newCap = oldThr;</span><br><span class="line">    else &#123;               // zero initial threshold signifies using defaults</span><br><span class="line">        newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">    &#125;</span><br><span class="line">    if (newThr == 0) &#123;</span><br><span class="line">        float ft = (float)newCap * loadFactor;</span><br><span class="line">        newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (float)MAXIMUM_CAPACITY ?</span><br><span class="line">                  (int)ft : Integer.MAX_VALUE);</span><br><span class="line">    &#125;</span><br><span class="line">    threshold = newThr;</span><br><span class="line">   </span><br><span class="line">    /*** 这里省略table表的变化过程***/</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="无参构造函数"><a href="#无参构造函数" class="headerlink" title="无参构造函数"></a>无参构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public HashMap() &#123;</span><br><span class="line">        this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这里的无参构造函数只初始化了负载因子为默认值0.75。<br>== 注意，此时hashmap的table,threshold都还没用初始化，即此时的容量为0，阈值也为0。==<br>而在第一次put时，检查<code>table==null</code>,进行第一次resize<br><img src="https://img-blog.csdnimg.cn/20200217152914993.png" alt="在这里插入图片描述"><br>此时在resize中会进入下面的分支<br><img src="https://img-blog.csdnimg.cn/20200217153215517.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTk1MzM1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>所以容量cap为默认值16，阈值threshold为 16*0.75=12。<br>而在之后的每次扩容中，容量和阈值都变为原来的两倍。<br>即两者仍然保持着0.75的比例。</p>
+<h3 id="带参数的构造函数"><a href="#带参数的构造函数" class="headerlink" title="带参数的构造函数"></a>带参数的构造函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public HashMap(int initialCapacity) &#123;</span><br><span class="line">    this(initialCapacity, DEFAULT_LOAD_FACTOR);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public HashMap(int initialCapacity, float loadFactor) &#123;</span><br><span class="line">    if (initialCapacity &lt; 0)</span><br><span class="line">        throw new IllegalArgumentException(&quot;Illegal initial capacity: &quot; +</span><br><span class="line">                                           initialCapacity);</span><br><span class="line">    if (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">        initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">    if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))</span><br><span class="line">        throw new IllegalArgumentException(&quot;Illegal load factor: &quot; +</span><br><span class="line">                                           loadFactor);</span><br><span class="line">    this.loadFactor = loadFactor;</span><br><span class="line">    this.threshold = tableSizeFor(initialCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码除了参数的合法判断以外，主要设置了负载因子和阈值，而阈值由tableSizeFor()函数确定。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Returns a power of two size for the given target capacity.</span><br><span class="line"> */</span><br><span class="line">static final int tableSizeFor(int cap) &#123;</span><br><span class="line">    int n = cap - 1;</span><br><span class="line">    n |= n &gt;&gt;&gt; 1;</span><br><span class="line">    n |= n &gt;&gt;&gt; 2;</span><br><span class="line">    n |= n &gt;&gt;&gt; 4;</span><br><span class="line">    n |= n &gt;&gt;&gt; 8;</span><br><span class="line">    n |= n &gt;&gt;&gt; 16;</span><br><span class="line">    return (n &lt; 0) ? 1 : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到注释，阈值threshold将被设置为最接近给定参数的2^n^的值。<br>==注意，此时只设置了阈值，table还没初始化，即容量cap还为0。==</p>
+<p>同样是在put时，首次进行扩容，而扩容的分支如下<br><img src="https://img-blog.csdnimg.cn/20200217154502207.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTk1MzM1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>可以看到，容量cap被设置为了刚刚计算出的阈值2^n^，而阈值被重新设置为cap*loadFactor。虽然两者仍然保持着loadFactor的比例，但是先设置了阈值，然后赋值给了容量，再根据容量和负载因子重新计算阈值。这个过程中，阈值担当了一个中间变量的角色。</p>
+<p>而在后续的扩容过程中，容量和阈值仍然保持着负载因子的比例关系，并同时变为原来的两倍。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:18px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	  
+	</div>
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/集合/" rel="tag"><i class="fa fa-tag"></i> 集合</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/27/服务发现——基于Eureka服务器实现微服务注册/" rel="next" title="服务发现——基于Eureka服务器实现微服务注册">
+                <i class="fa fa-chevron-left"></i> 服务发现——基于Eureka服务器实现微服务注册
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MDM5NS8xNjkyMg=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="伈伈点灯">
+            
+              <p class="site-author-name" itemprop="name">伈伈点灯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Alexaccele" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="zouruiximail@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/qq_40995335" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-contao"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#究竟什么时候扩容"><span class="nav-number">1.</span> <span class="nav-text">究竟什么时候扩容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阈值是如何确定的"><span class="nav-number">2.</span> <span class="nav-text">阈值是如何确定的</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#无参构造函数"><span class="nav-number">2.1.</span> <span class="nav-text">无参构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带参数的构造函数"><span class="nav-number">2.2.</span> <span class="nav-text">带参数的构造函数</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">伈伈点灯</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count"></span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共字</span>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1rsz2DVhaq57npfl5d5Km1M1-gzGzoHsz", "bGO10LFJSwJacOmLolOuNje3");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>

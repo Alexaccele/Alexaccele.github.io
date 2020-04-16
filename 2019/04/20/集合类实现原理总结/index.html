@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="集合类,原理,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="code blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="集合类实现原理总结整体认识这里贴出一张网上某大神制作的关于集合类的整体结构关系  此图转载自  https://blog.csdn.net/u010887744/article/details/50575735 ListArrayList——非线程安全内部结构ArrayList的内部结构其实就是一个数组。 由于是数组结构，故访问时间复杂度为O(1)，插入删除的时间复杂度为O(n)。 扩容机制Arr">
+<meta name="keywords" content="集合类,原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="集合类实现原理总结">
+<meta property="og:url" content="Alexaccele.github.io.git/2019/04/20/集合类实现原理总结/index.html">
+<meta property="og:site_name" content="code blog">
+<meta property="og:description" content="集合类实现原理总结整体认识这里贴出一张网上某大神制作的关于集合类的整体结构关系  此图转载自  https://blog.csdn.net/u010887744/article/details/50575735 ListArrayList——非线程安全内部结构ArrayList的内部结构其实就是一个数组。 由于是数组结构，故访问时间复杂度为O(1)，插入删除的时间复杂度为O(n)。 扩容机制Arr">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.imgur.com/xAiWVkO.png">
+<meta property="og:updated_time" content="2020-04-16T08:29:12.843Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="集合类实现原理总结">
+<meta name="twitter:description" content="集合类实现原理总结整体认识这里贴出一张网上某大神制作的关于集合类的整体结构关系  此图转载自  https://blog.csdn.net/u010887744/article/details/50575735 ListArrayList——非线程安全内部结构ArrayList的内部结构其实就是一个数组。 由于是数组结构，故访问时间复杂度为O(1)，插入删除的时间复杂度为O(n)。 扩容机制Arr">
+<meta name="twitter:image" content="https://i.imgur.com/xAiWVkO.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="Alexaccele.github.io.git/2019/04/20/集合类实现原理总结/">
+
+
+
+
+
+  <title>集合类实现原理总结 | code blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3d8286dd05ef43c6f490c33137056337";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">code blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录学习中的点滴收获</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="Alexaccele.github.io.git/2019/04/20/集合类实现原理总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="伈伈点灯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="code blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">集合类实现原理总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-20T18:59:03+08:00">
+                2019-04-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/实现原理/" itemprop="url" rel="index">
+                    <span itemprop="name">实现原理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/20/集合类实现原理总结/" class="leancloud_visitors" data-flag-title="集合类实现原理总结">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="集合类实现原理总结"><a href="#集合类实现原理总结" class="headerlink" title="集合类实现原理总结"></a>集合类实现原理总结</h1><h2 id="整体认识"><a href="#整体认识" class="headerlink" title="整体认识"></a>整体认识</h2><p>这里贴出一张网上某大神制作的关于集合类的整体结构关系</p>
+<p><img src="https://i.imgur.com/xAiWVkO.png" alt></p>
+<p>此图转载自 <a href="https://blog.csdn.net/u010887744/article/details/50575735" target="_blank" rel="noopener"> https://blog.csdn.net/u010887744/article/details/50575735</a></p>
+<h2 id="List"><a href="#List" class="headerlink" title="List"></a>List</h2><h3 id="ArrayList——非线程安全"><a href="#ArrayList——非线程安全" class="headerlink" title="ArrayList——非线程安全"></a>ArrayList——非线程安全</h3><h4 id="内部结构"><a href="#内部结构" class="headerlink" title="内部结构"></a>内部结构</h4><p>ArrayList的内部结构其实就是一个数组。</p>
+<p>由于是数组结构，故访问时间复杂度为O(1)，插入删除的时间复杂度为O(n)。</p>
+<h4 id="扩容机制"><a href="#扩容机制" class="headerlink" title="扩容机制"></a>扩容机制</h4><p>ArrayList的默认大小是10个元素，当容量不够时，则需要扩容，而扩容的大小是原来的1.5倍(JDK1.8)，其实现代码如下：</p>
+<pre><code>private void grow(int minCapacity) {
+    // overflow-conscious code
+    int oldCapacity = elementData.length;
+    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
+    if (newCapacity - minCapacity &lt; 0)
+        newCapacity = minCapacity;
+    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+        newCapacity = hugeCapacity(minCapacity);
+    // minCapacity is usually close to size, so this is a win:
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
+</code></pre><p>其决定新数组大小的则是<code>int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);</code></p>
+<p>可以看出采用的是位运算得出原来的一半，再加上原来的大小，则得出了1.5倍。<br>而扩容的行为则是通过<code>Arrays.copyOf(elementData, newCapacity);</code>将原来的数组内容复制到新的数组中。</p>
+<blockquote>
+<p>补充</p>
+<p>关于网上部分文章提到的扩容为原来的1.5倍+1，其实是JDK1.6中的实现。扩容值算法如下：</p>
+<p>int var4 = var2 * 3 / 2 + 1;</p>
+<p>而自从JDK1.7开始则是采用位运算实现，故没有了后面的+1.</p>
+</blockquote>
+<a id="more"></a>
+<h3 id="LinkedList——非线程安全"><a href="#LinkedList——非线程安全" class="headerlink" title="LinkedList——非线程安全"></a>LinkedList——非线程安全</h3><h4 id="内部结构-1"><a href="#内部结构-1" class="headerlink" title="内部结构"></a>内部结构</h4><p>采用双向链表实现，故插入的时间复杂度是O(1)，而查询的时间复杂度是O(n)</p>
+<p>由于还实现了Deque接口，故还可以用作双端队列</p>
+<p>由于是链表结构，故只要是遍历链表就需要使用ListIterator</p>
+<p>采用了索引优化，可以根据index选择从first或者last开始遍历。</p>
+<h3 id="Vector——线程安全"><a href="#Vector——线程安全" class="headerlink" title="Vector——线程安全"></a>Vector——线程安全</h3><h4 id="内部结构-2"><a href="#内部结构-2" class="headerlink" title="内部结构"></a>内部结构</h4><p>与ArrayList相同，采用数组的形式实现</p>
+<p>初始大小10，最大容量Integer.MAX_VALUE - 8。</p>
+<h4 id="扩容机制-1"><a href="#扩容机制-1" class="headerlink" title="扩容机制"></a>扩容机制</h4><p>扩容为原来的两倍</p>
+<pre><code>private void grow(int minCapacity) {
+    // overflow-conscious code
+    int oldCapacity = elementData.length;
+    int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ?
+                                     capacityIncrement : oldCapacity);
+    if (newCapacity - minCapacity &lt; 0)
+        newCapacity = minCapacity;
+    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+        newCapacity = hugeCapacity(minCapacity);
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
+</code></pre><h4 id="线程安全的实现"><a href="#线程安全的实现" class="headerlink" title="线程安全的实现"></a>线程安全的实现</h4><p>所有可能发生竞争的方法都采用synchronized关键字实现，故效率极低，现在已经不再使用。</p>
+<p>若要使用线程安全的List则应该使用CopyOnWriteArrayList。</p>
+<h3 id="CopyOnWriteArrayList——线程安全"><a href="#CopyOnWriteArrayList——线程安全" class="headerlink" title="CopyOnWriteArrayList——线程安全"></a>CopyOnWriteArrayList——线程安全</h3><p>CopyOnWrite容器即写时复制的容器。通俗的理解是当我们往一个容器添加元素的时候，不直接往当前容器添加，而是先将当前容器进行Copy，复制出一个新的容器，然后新的容器里添加元素，添加完元素之后，再将原容器的引用指向新的容器。这样做的好处是我们可以对CopyOnWrite容器进行并发的读，而不需要加锁，因为当前容器不会添加任何元素。所以CopyOnWrite容器也是一种读写分离的思想，读和写不同的容器。</p>
+<h4 id="写锁的实现"><a href="#写锁的实现" class="headerlink" title="写锁的实现"></a>写锁的实现</h4><p>只在写的时候对数组加锁，采用的是ReentrantLock，加锁之后再复制原来的数组到新数组中，并添加新的元素。</p>
+<p>在这个加锁的期间，由于其他线程仍然可以进行读操作，但读的数组是加锁前的旧数组，因此可能会读到原来的旧数据。</p>
+<h4 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h4><p>适合用在读多写少的场景，即可以并发的读而不需要额外的同步操作，只有少量的写操作需要依靠锁来保证线程安全。</p>
+<h2 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h2><h3 id="HashMap——非线程安全"><a href="#HashMap——非线程安全" class="headerlink" title="HashMap——非线程安全"></a>HashMap——非线程安全</h3><h4 id="内部结构-3"><a href="#内部结构-3" class="headerlink" title="内部结构"></a>内部结构</h4><p>HashMap中主干是一个Node数组，每个Node包含一个key-value的键值对。</p>
+<pre><code>transient Node&lt;k,v&gt;[] table;//存储（位桶）的数组&lt;/k,v&gt;
+</code></pre><p>Node是HashMap的一个静态内部类。</p>
+<pre><code>//Node是单向链表，它实现了Map.Entry接口
+static class Node&lt;k,v&gt; implements Map.Entry&lt;k,v&gt; {
+    final int hash;
+    final K key;
+    V value;
+    Node&lt;k,v&gt; next;
+    //构造函数Hash值 键 值 下一个节点
+    Node(int hash, K key, V value, Node&lt;k,v&gt; next) {
+        this.hash = hash;
+        this.key = key;
+        this.value = value;
+        this.next = next;
+    }
+
+    public final K getKey()        { return key; }
+    public final V getValue()      { return value; }
+    public final String toString() { return key + = + value; }
+
+    public final int hashCode() {
+        return Objects.hashCode(key) ^ Objects.hashCode(value);
+    }
+
+    public final V setValue(V newValue) {
+        V oldValue = value;
+        value = newValue;
+        return oldValue;
+    }
+    //判断两个node是否相等,若key和value都相等，返回true。可以与自身比较为true
+    public final boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (o instanceof Map.Entry) {
+            Map.Entry&lt;!--?,?--&gt; e = (Map.Entry&lt;!--?,?--&gt;)o;
+            if (Objects.equals(key, e.getKey()) &amp;&amp;
+                Objects.equals(value, e.getValue()))
+                return true;
+        }
+        return false;
+}
+</code></pre><h4 id="冲突解决"><a href="#冲突解决" class="headerlink" title="冲突解决"></a>冲突解决</h4><p>在HashMap中是以数组（也称为位桶）+ 链表 + (红黑树)的形式存在，当hash值冲突时，则以链表的形式解决hash冲突。</p>
+<h4 id="新特性"><a href="#新特性" class="headerlink" title="新特性"></a>新特性</h4><p>在JDK1.8中则更是增加了红黑树的结构，当链表的长度超过阈值8时，则会将这部分hash冲突的链表转为红黑树，这样的目的在于，当HashMap中的hash冲突过多而导致链表过长时，仍能较快速的查找到对应的value值，即从以前的 O(n)变为了O(log(n))。</p>
+<blockquote>
+<p>补充</p>
+<p>当链表长度超过8时，还要判断当前的map集合中是否总数量达到了64个，如果没有达到的话，不是进行红黑树的转换，而是直接进行扩容。</p>
+</blockquote>
+<h4 id="扩容机制-2"><a href="#扩容机制-2" class="headerlink" title="扩容机制"></a>扩容机制</h4><p>构造hash表时，如果不指明初始大小，默认大小为16（即Node数组大小16）</p>
+<p>当链表数组的容量超过初始容量的0.75倍（负载因子）时，再散列将链表数组扩大2倍，把原链表数组的搬移到新的数组中。</p>
+<blockquote>
+<p>为什么要扩容？为什么需要使用负载因子</p>
+<p>因为如果填充比很大，说明利用的空间很多，如果一直不进行扩容的话，链表就会越来越长，这样查找的效率很低，因为链表的长度很大（JDK1.8使用了红黑树后会改进很多），扩容之后，将原来链表数组的每一个链表分成奇偶两个子链表分别挂在新链表数组的散列位置，这样就减少了每个链表的长度，增加查找效率。</p>
+</blockquote>
+<h3 id="LinkedHashMap——非线程安全"><a href="#LinkedHashMap——非线程安全" class="headerlink" title="LinkedHashMap——非线程安全"></a>LinkedHashMap——非线程安全</h3><p>LinkedHashMap继承自HashMap，大部分属性都类似，但HashMap不保证存储顺序，而LinkedHashMap会维护元素的顺序，顺序可分为访问顺序和插入顺序，默认是保证插入顺序（即迭代遍历的顺序是元素插入的顺序）</p>
+<pre><code>// 第三个参数用于指定accessOrder值
+Map&lt;String, String&gt; linkedHashMap = new LinkedHashMap&lt;&gt;(16, 0.75f, true);
+</code></pre><p>通过以上构造函数，可以指定accessOrder的值为true从而使其保证访问顺序，访问顺序是指，当每次调用get()方法后，对应的key-value键值对则被放在了链表的尾部。</p>
+<h4 id="内部结构-4"><a href="#内部结构-4" class="headerlink" title="内部结构"></a>内部结构</h4><p>LinkedHashMap是由一个双向链表组成。</p>
+<p>LinkedHashMap使用的是LRU算法(最近最少使用) 。当你插入元素时它会将节点插入双向链表的链尾，如果key重复，则也会将节点移动至链尾，当用get()方法获取value时也会将节点移动至链尾。 </p>
+<h3 id="TreeMap——非线程安全"><a href="#TreeMap——非线程安全" class="headerlink" title="TreeMap——非线程安全"></a>TreeMap——非线程安全</h3><h3 id="内部结构-5"><a href="#内部结构-5" class="headerlink" title="内部结构"></a>内部结构</h3><p>基于红黑树实现</p>
+<h4 id="排序方式"><a href="#排序方式" class="headerlink" title="排序方式"></a>排序方式</h4><p>其映射根据键的自然顺序进行排序，或者根据创建映射时提供的 Comparator 进行排序，具体取决于使用的构造方法。其基本操作 containsKey、get、put 和 remove 的时间复杂度是 log(n) 。TreeMap是非同步的。 它的iterator 方法返回的迭代器是fail-fastl的。</p>
+<p>当自定义比较器时，需要自定义类实现java.lang.Comparable接口，并重写compareTo()方法。</p>
+<p>相比较于LinkedHashMap的保证插入顺序，TreeMap是在元素的内容上有序（相当于内容排序）</p>
+<h3 id="HashTable——线程安全"><a href="#HashTable——线程安全" class="headerlink" title="HashTable——线程安全"></a>HashTable——线程安全</h3><p>现在已经不再使用，其线程安全的实现方式是所有的方法都是synchronized方法，故虽然保证了线程安全，但效率很低。若需要使用线程安全的Map则应该使用ConcurrentHashMap。</p>
+<p>底层数组+链表实现，无论key还是value都不能为null，线程安全，实现线程安全的方式是在修改数据时锁住整个HashTable，效率低，ConcurrentHashMap做了相关优化</p>
+<p>初始size为11，扩容：newsize = olesize*2+1</p>
+<h3 id="ConcurrentHashMap——线程安全"><a href="#ConcurrentHashMap——线程安全" class="headerlink" title="ConcurrentHashMap——线程安全"></a>ConcurrentHashMap——线程安全</h3><h4 id="内部结构-6"><a href="#内部结构-6" class="headerlink" title="内部结构"></a>内部结构</h4><p>在JDK1.7中采用的是ReentrantLock+Segment+HashEntry的结构</p>
+<p>在JDK1.8中则是采用数组+链表+红黑树的结构，其线程安全的保证则是通过synchronized+CAS的形式。</p>
+<h4 id="线程安全实现机制"><a href="#线程安全实现机制" class="headerlink" title="线程安全实现机制"></a>线程安全实现机制</h4><p>在JDK1.7中采用分段锁技术，将数据分成一段一段的存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据的时候，其他段的数据也能被其他线程访问，能够实现真正的并发访问。</p>
+<p>而在JDK1.8中则直接参考了JDK1.8中HashMap的结构，采用数组+链表+红黑树的结构，而线程安全则是通过CAS来实现。而锁的细粒度也从JDK1.7中的segment段降低为了JDK1.8中的每个Node，且由于红黑树的引入，使得在当链表节点过多的情况下能提高查询效率。</p>
+<h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>由于Set底层都是采用对应的Map实现，所以不再赘述。</p>
+<p>需要注意的是在Set中，Map对应的key则是对应的Set的值，而Map对应的value则是采用同一个Object对象</p>
+<pre><code>// Dummy value to associate with an Object in the backing Map
+private static final Object PRESENT = new Object();
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:18px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	  
+	</div>
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/集合类/" rel="tag"><i class="fa fa-tag"></i> 集合类</a>
+          
+            <a href="/tags/原理/" rel="tag"><i class="fa fa-tag"></i> 原理</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/19/虚拟机中多态的实现方式/" rel="next" title="虚拟机中多态的实现方式">
+                <i class="fa fa-chevron-left"></i> 虚拟机中多态的实现方式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/27/服务发现——基于Eureka服务器实现微服务注册/" rel="prev" title="服务发现——基于Eureka服务器实现微服务注册">
+                服务发现——基于Eureka服务器实现微服务注册 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MDM5NS8xNjkyMg=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="伈伈点灯">
+            
+              <p class="site-author-name" itemprop="name">伈伈点灯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Alexaccele" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="zouruiximail@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/qq_40995335" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-contao"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#集合类实现原理总结"><span class="nav-number">1.</span> <span class="nav-text">集合类实现原理总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#整体认识"><span class="nav-number">1.1.</span> <span class="nav-text">整体认识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#List"><span class="nav-number">1.2.</span> <span class="nav-text">List</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ArrayList——非线程安全"><span class="nav-number">1.2.1.</span> <span class="nav-text">ArrayList——非线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部结构"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">内部结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#扩容机制"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">扩容机制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LinkedList——非线程安全"><span class="nav-number">1.2.2.</span> <span class="nav-text">LinkedList——非线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部结构-1"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">内部结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vector——线程安全"><span class="nav-number">1.2.3.</span> <span class="nav-text">Vector——线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部结构-2"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">内部结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#扩容机制-1"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">扩容机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程安全的实现"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">线程安全的实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CopyOnWriteArrayList——线程安全"><span class="nav-number">1.2.4.</span> <span class="nav-text">CopyOnWriteArrayList——线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#写锁的实现"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">写锁的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#适用场景"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">适用场景</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Map"><span class="nav-number">1.3.</span> <span class="nav-text">Map</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap——非线程安全"><span class="nav-number">1.3.1.</span> <span class="nav-text">HashMap——非线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部结构-3"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">内部结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#冲突解决"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">冲突解决</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新特性"><span class="nav-number">1.3.1.3.</span> <span class="nav-text">新特性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#扩容机制-2"><span class="nav-number">1.3.1.4.</span> <span class="nav-text">扩容机制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LinkedHashMap——非线程安全"><span class="nav-number">1.3.2.</span> <span class="nav-text">LinkedHashMap——非线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部结构-4"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">内部结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TreeMap——非线程安全"><span class="nav-number">1.3.3.</span> <span class="nav-text">TreeMap——非线程安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内部结构-5"><span class="nav-number">1.3.4.</span> <span class="nav-text">内部结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#排序方式"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">排序方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashTable——线程安全"><span class="nav-number">1.3.5.</span> <span class="nav-text">HashTable——线程安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConcurrentHashMap——线程安全"><span class="nav-number">1.3.6.</span> <span class="nav-text">ConcurrentHashMap——线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部结构-6"><span class="nav-number">1.3.6.1.</span> <span class="nav-text">内部结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程安全实现机制"><span class="nav-number">1.3.6.2.</span> <span class="nav-text">线程安全实现机制</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Set"><span class="nav-number">1.4.</span> <span class="nav-text">Set</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">伈伈点灯</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count"></span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共字</span>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1rsz2DVhaq57npfl5d5Km1M1-gzGzoHsz", "bGO10LFJSwJacOmLolOuNje3");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>

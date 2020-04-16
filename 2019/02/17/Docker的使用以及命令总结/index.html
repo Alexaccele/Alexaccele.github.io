@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Docker,命令总结,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="code blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="帮助相关 docker –help 可以查看docker的所有命令（注意单词全拼的参数前都是两个‘-’号） docker info 查看docker信息 docker version 查看docker版本号">
+<meta name="keywords" content="Docker,命令总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker的使用以及命令总结">
+<meta property="og:url" content="Alexaccele.github.io.git/2019/02/17/Docker的使用以及命令总结/index.html">
+<meta property="og:site_name" content="code blog">
+<meta property="og:description" content="帮助相关 docker –help 可以查看docker的所有命令（注意单词全拼的参数前都是两个‘-’号） docker info 查看docker信息 docker version 查看docker版本号">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-04-16T08:29:12.839Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker的使用以及命令总结">
+<meta name="twitter:description" content="帮助相关 docker –help 可以查看docker的所有命令（注意单词全拼的参数前都是两个‘-’号） docker info 查看docker信息 docker version 查看docker版本号">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="Alexaccele.github.io.git/2019/02/17/Docker的使用以及命令总结/">
+
+
+
+
+
+  <title>Docker的使用以及命令总结 | code blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3d8286dd05ef43c6f490c33137056337";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">code blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录学习中的点滴收获</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="Alexaccele.github.io.git/2019/02/17/Docker的使用以及命令总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="伈伈点灯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="code blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Docker的使用以及命令总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-17T15:54:46+08:00">
+                2019-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/02/17/Docker的使用以及命令总结/" class="leancloud_visitors" data-flag-title="Docker的使用以及命令总结">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="帮助相关"><a href="#帮助相关" class="headerlink" title="帮助相关"></a>帮助相关</h2><ul>
+<li>docker –help 可以查看docker的所有命令（注意单词全拼的参数前都是两个‘-’号）</li>
+<li>docker info 查看docker信息</li>
+<li>docker version 查看docker版本号</li>
+</ul>
+<a id="more"></a>
+<h3 id="最有用的帮助命令"><a href="#最有用的帮助命令" class="headerlink" title="最有用的帮助命令"></a>最有用的帮助命令</h3><p>docker XXX –help 查看具体命令的帮助手册（XXX代指各种命令）</p>
+<h2 id="镜像相关"><a href="#镜像相关" class="headerlink" title="镜像相关"></a>镜像相关</h2><h3 id="docker-images-查看所有镜像"><a href="#docker-images-查看所有镜像" class="headerlink" title="docker images 查看所有镜像"></a>docker images 查看所有镜像</h3><p>参数说明：</p>
+<ul>
+<li>-a :列出本地所有的镜像（含中间映像层）</li>
+<li>-q :只显示镜像ID。</li>
+<li>–digests :显示镜像的摘要信息</li>
+<li>–no-trunc :显示完整的镜像信息</li>
+</ul>
+<h3 id="docker-search-XXX-根据关键字搜索docker镜像"><a href="#docker-search-XXX-根据关键字搜索docker镜像" class="headerlink" title="docker search XXX 根据关键字搜索docker镜像"></a>docker search XXX 根据关键字搜索docker镜像</h3><p>参数说明：</p>
+<ul>
+<li>-s : 列出收藏数不小于指定值的镜像。</li>
+<li>–limit int ：最大显示结果数(默认25个)</li>
+<li>–no-trunc : 显示完整的镜像描述</li>
+<li>–automated : 只列出 automated build类型的镜像；</li>
+</ul>
+<h3 id="docker-pull-XXX-下载镜像"><a href="#docker-pull-XXX-下载镜像" class="headerlink" title="docker pull XXX 下载镜像"></a>docker pull XXX 下载镜像</h3><p>可以使用docker pull XXX:Tag 具体指出下载某个Tag的镜像</p>
+<h3 id="docker-rmi-ID-删除ID所指的镜像"><a href="#docker-rmi-ID-删除ID所指的镜像" class="headerlink" title="docker rmi ID 删除ID所指的镜像"></a>docker rmi ID 删除ID所指的镜像</h3><p>参数说明：</p>
+<p>-f：强制删除</p>
+<p>例子：</p>
+<ul>
+<li>删除单个镜像：docker rmi -f ID</li>
+<li>删除多个镜像：docker rmi -f 镜像名1:TAG 镜像名2:TAG</li>
+<li>删除全部镜像：docker rmi -f $(docker images -qa)</li>
+</ul>
+<h2 id="容器相关"><a href="#容器相关" class="headerlink" title="容器相关"></a>容器相关</h2><h3 id="docker-run-OPTIONS-IMAGE-COMMAND-ARG…-新建并启动容器"><a href="#docker-run-OPTIONS-IMAGE-COMMAND-ARG…-新建并启动容器" class="headerlink" title="docker run [OPTIONS] IMAGE [COMMAND] [ARG…] 新建并启动容器"></a>docker run [OPTIONS] IMAGE [COMMAND] [ARG…] 新建并启动容器</h3><p>参数说明：</p>
+<ul>
+<li>–name=”容器新名字”: 为容器指定一个名称</li>
+<li>-d: 后台运行容器，并返回容器ID，也即启动守护式容器</li>
+<li>-i：以交互模式运行容器，通常与 -t 同时使用</li>
+<li>-t：为容器重新分配一个伪输入终端，通常与 -i 同时使用</li>
+<li>-P: 随机端口映射</li>
+<li><p>-p: 指定端口映射，有以下四种格式</p>
+</li>
+<li><p>ip:hostPort:containerPort</p>
+</li>
+<li>ip::containerPort</li>
+<li>hostPort:containerPort</li>
+<li>containerPort<br>启动交互式容器：使用镜像centos:latest以交互模式启动一个容器,在容器内执行/bin/bash命令。<code>docker run -it centos /bin/bash</code></li>
+</ul>
+<p>后台运行容器：<code>docker run -d centos</code></p>
+<h3 id="docker-ps-查看所有正在运行的容器"><a href="#docker-ps-查看所有正在运行的容器" class="headerlink" title="docker ps 查看所有正在运行的容器"></a>docker ps 查看所有正在运行的容器</h3><p>参数说明：</p>
+<ul>
+<li>-a :列出当前所有正在运行的容器+历史上运行过的</li>
+<li>-l :显示最近创建的容器。</li>
+<li>-n：显示最近n个创建的容器。</li>
+<li>-q :静默模式，只显示容器编号。</li>
+<li>–no-trunc :不截断输出。<h3 id="退出容器"><a href="#退出容器" class="headerlink" title="退出容器"></a>退出容器</h3></li>
+<li>exit：容器停止退出</li>
+<li>Ctrl+P+Q：容器不停止退出<h3 id="容器的启动停止和重启"><a href="#容器的启动停止和重启" class="headerlink" title="容器的启动停止和重启"></a>容器的启动停止和重启</h3></li>
+<li>docker start ID/容器名 启动容器</li>
+<li>docker restart ID/容器名 重启容器</li>
+<li>docker stop ID/容器名 停止容器</li>
+<li>docker kill ID/容器名 强制停止容器</li>
+</ul>
+<p>stop和kill的区别：stop是类似于电脑关机，会进行程序的一系列关闭操作<br>kill则类似于直接断电，强制停止容器，不进行一系列程序关闭所需要执行的操作</p>
+<h3 id="删除容器"><a href="#删除容器" class="headerlink" title="删除容器"></a>删除容器</h3><ul>
+<li>docker rm -f ID 删除指定ID的容器</li>
+<li>docker rm -f $(docker ps -q)批量删除全部正在运行的容器</li>
+</ul>
+<h3 id="重新进入容器的方法"><a href="#重新进入容器的方法" class="headerlink" title="重新进入容器的方法"></a>重新进入容器的方法</h3><p>docker exec -it ID BashShell 进入正在运行的容器并以命令行交互<br>例如：<code>docker exec -it ID /bin/bash</code></p>
+<p>docker attach ID 重新进入容器</p>
+<p>区别：<br>attach 直接进入容器启动命令的终端，不会启动新的进程<br>exec 是在容器中打开新的终端，并且可以启动新的进程</p>
+<h3 id="从容器中拷贝文件到主机上"><a href="#从容器中拷贝文件到主机上" class="headerlink" title="从容器中拷贝文件到主机上"></a>从容器中拷贝文件到主机上</h3><p>docker cp ID:容器内路径 目标主机路径<br>例如：<code>docker cp ID:/usr /home</code></p>
+<h3 id="docker-commit-提交指定容器副本成为一个新镜像"><a href="#docker-commit-提交指定容器副本成为一个新镜像" class="headerlink" title="docker commit 提交指定容器副本成为一个新镜像"></a>docker commit 提交指定容器副本成为一个新镜像</h3><pre><code>docker commit -m=“提交的描述信息” -a=“作者” 容器ID 要创建的目标镜像名:[标签名]
+</code></pre><p>应用场景：当我们从hub上下载的镜像在本地成功运行后，对其中的内容进行了修改，例如配置参数等，当完成我们的修改后，可以使用docker commit命令，为这个修改后的容器生成一个新的镜像，从而当我们运行这个镜像时，里面的内容就是我们修改好的。</p>
+<h3 id="容器相关细节命令"><a href="#容器相关细节命令" class="headerlink" title="容器相关细节命令"></a>容器相关细节命令</h3><pre><code>docker logs -f -t –tail ID 查看容器日志
+</code></pre><p>参数说明：</p>
+<ul>
+<li>-t 是加入时间戳</li>
+<li>-f 跟随最新的日志打印</li>
+<li>–tail 数字 显示最后多少条</li>
+</ul>
+<p>docker top ID 查看容器内进程</p>
+<p>docker inspect ID 查看容器内部细节（JSON形式表示）</p>
+<h2 id="容器数据卷"><a href="#容器数据卷" class="headerlink" title="容器数据卷"></a>容器数据卷</h2><p>容器数据卷是为了持久化容器中的数据而设计的，数据卷是完全独立于容器的生命周期，不会因为容器的删除而消失。</p>
+<p>数据卷存在于宿主机中，独立于容器，和容器的生命周期是分离的，数据卷存在于宿主机的文件系统中，数据卷可以目录也可以是文件，容器可以利用数据卷与宿主机进行数据共享，实现了容器间的数据共享和交换。</p>
+<p>数据卷的特点：</p>
+<ol>
+<li>容器启动的时候初始化的，如果容器使用的镜像包含了数据，这些数据也会拷贝到数据卷中。</li>
+<li>容器对数据卷的修改是及时进行的。</li>
+<li>数据卷的变化不会影响镜像的更新。数据卷是独立于联合文件系统，镜像是基于联合文件系统。镜像与数据卷之间不会有相互影响。</li>
+<li>数据卷是宿主机中的一个目录，与容器生命周期隔离。<h3 id="命令添加"><a href="#命令添加" class="headerlink" title="命令添加"></a>命令添加</h3>使用-v可以挂载一个本地的目录到容器中作为数据卷。<br> docker run -it -v /宿主机绝对路径目录:/容器内目录 镜像名</li>
+</ol>
+<p>使用-v运行的容器会在宿主机和容器内对应位置创建文件目录，此时若使用docker inspect命令则可以看到，两个目录已经成功连接、挂载并且同时具有读写权限，此时的容器和宿主机中的对应目录是数据共享的，并且在容器停止后，数据依然共享，且在容器重新启动后数据仍保持一致。</p>
+<p>可以为数据卷添加权限 <code>docker run -it -v /宿主机绝对路径目录:/容器内目录:ro 镜像名</code> （ro表示Read-Only）此时的数据卷在容器中只能查看，不能修改。在宿主机中则可以修改。</p>
+<h3 id="DockerFile添加"><a href="#DockerFile添加" class="headerlink" title="DockerFile添加"></a>DockerFile添加</h3><p>可在Dockerfile中使用VOLUME指令来给镜像添加一个或多个数据卷</p>
+<p>即在DockerFile中添加如下指令：</p>
+<pre><code>VOLUME[&quot;/dataVolumeContainer&quot;,&quot;/dataVolumeContainer2&quot;,&quot;/dataVolumeContainer3&quot;]
+</code></pre><p>例如：</p>
+<pre><code># volume test
+FROM centos
+VOLUME [&quot;/dataVolumeContainer1&quot;,&quot;/dataVolumeContainer2&quot;]
+CMD echo &quot;finished,--------success1&quot;
+CMD /bin/bash
+</code></pre><p>在写好dockerfile文件后，则可以使用docker build命令来生成镜像，执行命令如下：</p>
+<p><code>docker build -f /mydocker/dockerfile -t xxx/centos .</code>（‘.’表示当前目录下）<br>-f:指定dockerfile文件的位置</p>
+<p>-t:生成的镜像命名空间</p>
+<p>此时就生成了一个名为xxx/centos的镜像，运行后就能通过docker inspect命令查看容器的数据卷对应的宿主机目录。</p>
+<blockquote>
+<p>注意：Docker挂载主机目录Docker访问出现cannot open directory .: Permission denied</p>
+<p>解决办法：在挂载目录后多加一个–privileged=true参数即可</p>
+</blockquote>
+<h2 id="数据卷容器"><a href="#数据卷容器" class="headerlink" title="数据卷容器"></a>数据卷容器</h2><p>命名的容器挂载数据卷，其它容器通过挂载这个(父容器)实现数据共享，挂载数据卷的容器，称之为数据卷容器。<br>数据卷容器挂载了一个本地目录，其他容器连接这个容器来实现数据的共享（数据地址的拷贝）。</p>
+<p>首先需要一个父容器作为数据卷容器</p>
+<pre><code>docker run -it --name dc01 xxx/centos
+</code></pre><p>再使用–volumes-from命令则使得子容器继承自父容器</p>
+<pre><code>docker run -it --name dc02 --volumes-from dc01 xxx/centos
+</code></pre><p>此时父容器dc01和子容器dc02中的数据就共享了，且所有修改都能同步。<br>即使删除任意一个父容器或子容器，数据也仍然共享。</p>
+<p>结论：容器之间配置信息的传递，数据卷的生命周期一直持续到没有容器使用它为止</p>
+<h2 id="DockerFile"><a href="#DockerFile" class="headerlink" title="DockerFile"></a>DockerFile</h2><p>Dockerfile是用来构建Docker镜像的构建文件，是由一系列命令和参数构成的脚本。</p>
+<h3 id="基本内容"><a href="#基本内容" class="headerlink" title="基本内容"></a>基本内容</h3><ol>
+<li>每条保留字指令都必须为大写字母且后面要跟随至少一个参数</li>
+<li>指令按照从上到下，顺序执行</li>
+<li>#表示注释</li>
+<li>每条指令都会创建一个新的镜像层，并对镜像进行提交</li>
+</ol>
+<h3 id="执行大致流程"><a href="#执行大致流程" class="headerlink" title="执行大致流程"></a>执行大致流程</h3><ol>
+<li>docker从基础镜像运行一个容器</li>
+<li>执行一条指令并对容器作出修改</li>
+<li>执行类似docker commit的操作提交一个新的镜像层</li>
+<li>docker再基于刚提交的镜像运行一个新容器</li>
+<li>执行dockerfile中的下一条指令直到所有指令都执行完成</li>
+</ol>
+<h3 id="保留字"><a href="#保留字" class="headerlink" title="保留字"></a>保留字</h3><ul>
+<li>FROM：基础镜像，当前新镜像是基于哪个镜像的</li>
+<li>MAINTAINER：镜像维护者的姓名和邮箱地址</li>
+<li>RUN：容器构建时需要运行的命令</li>
+<li>EXPOSE：当前容器对外暴露出的端口</li>
+<li>WORKDIR：指定在创建容器后，终端默认登陆的进来工作目录，一个落脚点</li>
+<li>ENV：用来在构建镜像过程中设置环境变量</li>
+<li>ADD：将宿主机目录下的文件拷贝进镜像且ADD命令会自动处理URL和解压tar压缩包</li>
+<li>COPY：类似ADD，拷贝文件和目录到镜像中。将从构建上下文目录中 &lt;源路径&gt; 的文件/目录复制到新的一层的镜像内的 &lt;目标路径&gt; 位置</li>
+<li>VOLUME：容器数据卷，用于数据保存和持久化工作</li>
+<li>CMD：指定一个容器启动时要运行的命令；Dockerfile 中可以有多个 CMD 指令，但只有最后一个生效，CMD 会被 docker run 之后的参数替换</li>
+<li>ENTRYPOINT：指定一个容器启动时要运行的命令；ENTRYPOINT 的目的和 CMD 一样，都是在指定容器启动程序及参数</li>
+<li>ONBUILD：当构建一个被继承的Dockerfile时运行命令，父镜像在被子继承后父镜像的onbuild被触发</li>
+</ul>
+<h3 id="dockerfile案例"><a href="#dockerfile案例" class="headerlink" title="dockerfile案例"></a>dockerfile案例</h3><p>自定义镜像mycentos</p>
+<pre><code>FROM centos  
+MAINTAINER zzyy&lt;zzyy167@126.com&gt;
+ENV MYPATH /usr/local
+WORKDIR $MYPATH
+RUN yum -y install vim
+RUN yum -y install net-tools
+EXPOSE 80
+CMD echo $MYPATH
+CMD echo &quot;success--------------ok&quot;
+CMD /bin/bash 
+</code></pre><p>自定义镜像Tomcat9</p>
+<pre><code>FROM centos
+MAINTAINERzzyy&lt;zzyybs@126.com&gt;
+#把宿主机当前上下文的c.txt拷贝到容器/usr/local/路径下
+COPY c.txt /usr/local/cincontainer.txt
+#把java与tomcat添加到容器中
+ADD jdk-8u171-linux-x64.tar.gz /usr/local/ADD apache-tomcat-9.0.8.tar.gz /usr/local/
+#安装vim编辑器
+RUN yum -y install vim
+#设置工作访问时候的WORKDIR路径，登录落脚点
+ENV MYPATH /usr/local
+WORKDIR $MYPATH
+#配置java与tomcat环境变量
+ENV JAVA_HOME /usr/local/jdk1.8.0_171
+ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+ENV CATALINA_HOME /usr/local/apache-tomcat-9.0.8
+ENV CATALINA_BASE /usr/local/apache-tomcat-9.0.8
+ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/lib:$CATALINA_HOME/bin
+#容器运行时监听的端口
+EXPOSE  8080
+#启动时运行tomcat
+#ENTRYPOINT [&quot;/usr/local/apache-tomcat-9.0.8/bin/startup.sh&quot; ]
+#CMD [&quot;/usr/local/apache-tomcat-9.0.8/bin/catalina.sh&quot;,&quot;run&quot;]
+CMD /usr/local/apache-tomcat-9.0.8/bin/startup.sh &amp;&amp; tail -F /usr/local/apache-tomcat-9.0.8/bin/logs/catalina.out
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>从应用软件的角度来看，Dockerfile、Docker镜像与Docker容器分别代表软件的三个不同阶段</p>
+<ul>
+<li>Dockerfile是软件的原材料</li>
+<li>Docker镜像是软件的交付品</li>
+<li>Docker容器则可以认为是软件的运行态。</li>
+</ul>
+<p>Dockerfile面向开发，Docker镜像成为交付标准，Docker容器则涉及部署与运维，三者缺一不可，合力充当Docker体系的基石。</p>
+<ol>
+<li>Dockerfile，需要定义一个Dockerfile，Dockerfile定义了进程需要的一切东西。Dockerfile涉及的内容包括执行代码或者是文件、环境变量、依赖包、运行时环境、动态链接库、操作系统的发行版、服务进程和内核进程(当应用进程需要和系统服务和内核进程打交道，这时需要考虑如何设计namespace的权限控制)等等;</li>
+<li>Docker镜像，在用Dockerfile定义一个文件之后，docker build时会产生一个Docker镜像，当运行 Docker镜像时，会真正开始提供服务;</li>
+<li>Docker容器，容器是直接提供服务的。</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:18px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	  
+	</div>
+	
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Docker/" rel="tag"><i class="fa fa-tag"></i> Docker</a>
+          
+            <a href="/tags/命令总结/" rel="tag"><i class="fa fa-tag"></i> 命令总结</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/01/装饰者模式/" rel="next" title="装饰者模式">
+                <i class="fa fa-chevron-left"></i> 装饰者模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/17/MySQL性能优化——剖析单条查询/" rel="prev" title="MySQL性能优化——剖析单条查询">
+                MySQL性能优化——剖析单条查询 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MDM5NS8xNjkyMg=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="伈伈点灯">
+            
+              <p class="site-author-name" itemprop="name">伈伈点灯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Alexaccele" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="zouruiximail@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/qq_40995335" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-contao"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#帮助相关"><span class="nav-number">1.</span> <span class="nav-text">帮助相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#最有用的帮助命令"><span class="nav-number">1.1.</span> <span class="nav-text">最有用的帮助命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#镜像相关"><span class="nav-number">2.</span> <span class="nav-text">镜像相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-images-查看所有镜像"><span class="nav-number">2.1.</span> <span class="nav-text">docker images 查看所有镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-search-XXX-根据关键字搜索docker镜像"><span class="nav-number">2.2.</span> <span class="nav-text">docker search XXX 根据关键字搜索docker镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-pull-XXX-下载镜像"><span class="nav-number">2.3.</span> <span class="nav-text">docker pull XXX 下载镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-rmi-ID-删除ID所指的镜像"><span class="nav-number">2.4.</span> <span class="nav-text">docker rmi ID 删除ID所指的镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器相关"><span class="nav-number">3.</span> <span class="nav-text">容器相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-run-OPTIONS-IMAGE-COMMAND-ARG…-新建并启动容器"><span class="nav-number">3.1.</span> <span class="nav-text">docker run [OPTIONS] IMAGE [COMMAND] [ARG…] 新建并启动容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-ps-查看所有正在运行的容器"><span class="nav-number">3.2.</span> <span class="nav-text">docker ps 查看所有正在运行的容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#退出容器"><span class="nav-number">3.3.</span> <span class="nav-text">退出容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容器的启动停止和重启"><span class="nav-number">3.4.</span> <span class="nav-text">容器的启动停止和重启</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除容器"><span class="nav-number">3.5.</span> <span class="nav-text">删除容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重新进入容器的方法"><span class="nav-number">3.6.</span> <span class="nav-text">重新进入容器的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从容器中拷贝文件到主机上"><span class="nav-number">3.7.</span> <span class="nav-text">从容器中拷贝文件到主机上</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-commit-提交指定容器副本成为一个新镜像"><span class="nav-number">3.8.</span> <span class="nav-text">docker commit 提交指定容器副本成为一个新镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容器相关细节命令"><span class="nav-number">3.9.</span> <span class="nav-text">容器相关细节命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器数据卷"><span class="nav-number">4.</span> <span class="nav-text">容器数据卷</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命令添加"><span class="nav-number">4.1.</span> <span class="nav-text">命令添加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DockerFile添加"><span class="nav-number">4.2.</span> <span class="nav-text">DockerFile添加</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据卷容器"><span class="nav-number">5.</span> <span class="nav-text">数据卷容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DockerFile"><span class="nav-number">6.</span> <span class="nav-text">DockerFile</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本内容"><span class="nav-number">6.1.</span> <span class="nav-text">基本内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#执行大致流程"><span class="nav-number">6.2.</span> <span class="nav-text">执行大致流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保留字"><span class="nav-number">6.3.</span> <span class="nav-text">保留字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dockerfile案例"><span class="nav-number">6.4.</span> <span class="nav-text">dockerfile案例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">伈伈点灯</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count"></span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共字</span>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1rsz2DVhaq57npfl5d5Km1M1-gzGzoHsz", "bGO10LFJSwJacOmLolOuNje3");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
